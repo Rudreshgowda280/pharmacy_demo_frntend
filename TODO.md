@@ -1,6 +1,4 @@
-# TODO: Enhance Navbar UI Designs and Animations
+# TODO: Enhance Hero Section with Animations and Details
 
-- [x] Clean up duplicated styles in Header.css
-- [x] Add modern UI designs (gradients, better colors, spacing)
-- [x] Incorporate animations (slide-down header, hover transitions, pulse cart count)
-- [x] Ensure responsive design
+- [x] Add animations to Hero section (fade-in, slide-up, bounce)
+- [x] Enhance with additional details (features, image, modern styling)
