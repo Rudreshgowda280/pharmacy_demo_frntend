@@ -15,9 +15,6 @@ function Hero() {
           </div>
         </div>
       </div>
-      <div className="hero-image">
-        <img src="/images/hyno%20pharmacy.jpg" alt="Pharmacy" />
-      </div>
     </div>
   );
 }

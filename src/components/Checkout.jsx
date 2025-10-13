@@ -17,6 +17,7 @@ function Checkout() {
   });
 
   const [shippingMethod, setShippingMethod] = useState("standard");
+  const [loadingLocation, setLoadingLocation] = useState(false);
 
   // ---- Helper functions ----
   const parsePrice = (price) => {
@@ -36,7 +37,6 @@ function Checkout() {
     (acc, item) => acc + parsePrice(item.price) * item.quantity,
     0
   );
-
   const shipping = shippingMethod === "standard" ? 0 : 200; // ₹200 for express
   const tax = subtotal * 0.05; // 5% GST
   const finalTotal = subtotal + tax + shipping;
@@ -48,6 +48,48 @@ function Checkout() {
       ...prev,
       [name]: value
     }));
+  };
+
+  // ---- Get Current Location ----
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setLoadingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const data = await res.json();
+          const address = data.address || {};
+
+          setShippingInfo((prev) => ({
+            ...prev,
+            street: address.road || "",
+            city: address.city || address.town || address.village || "",
+            state: address.state || "",
+            zip: address.postcode || ""
+          }));
+        } catch (error) {
+          console.error("Error fetching location:", error);
+          alert("Unable to fetch address from location.");
+        }
+
+        setLoadingLocation(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert("Unable to get your location.");
+        setLoadingLocation(false);
+      }
+    );
   };
 
   const handleSubmit = (e) => {
@@ -117,9 +159,7 @@ function Checkout() {
                     <p>{item.brand} • {item.strength} • {item.packSize}</p>
                     <p>Quantity: {item.quantity}</p>
                   </div>
-                  <div className="item-price">
-                    {formatINR(itemTotal)}
-                  </div>
+                  <div className="item-price">{formatINR(itemTotal)}</div>
                 </div>
               );
             })}
@@ -160,15 +200,27 @@ function Checkout() {
             />
           </div>
 
-          <div className="form-group">
+          {/* Street Address with current location button */}
+          <div className="form-group street-group">
             <label>Street Address *</label>
-            <input
-              type="text"
-              name="street"
-              value={shippingInfo.street}
-              onChange={handleInputChange}
-              required
-            />
+            <div className="street-input-wrapper">
+              <span className="location-icon">📍</span>
+              <input
+                type="text"
+                name="street"
+                value={shippingInfo.street}
+                onChange={handleInputChange}
+                required
+              />
+              <button
+                type="button"
+                onClick={handleGetLocation}
+                className="location-btn"
+                disabled={loadingLocation}
+              >
+                {loadingLocation ? "Fetching..." : "Use Current Location"}
+              </button>
+            </div>
           </div>
 
           <div className="form-row">

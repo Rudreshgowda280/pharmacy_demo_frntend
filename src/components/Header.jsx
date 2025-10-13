@@ -11,7 +11,7 @@ function Header() {
   return (
     <header className="header">
       <Link to="/" className="logo-link">
-        <img src="/images/hyno%20pharmacy.jpg" alt="HynoPharmacy" />
+        <img src="/images/logoupdate.jpg" alt="HynoPharmacy" />
       </Link>
       <nav>
         <Link to="/"><button>Dashboard</button></Link>
