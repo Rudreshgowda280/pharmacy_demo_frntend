@@ -14,6 +14,8 @@ import AboutUs from "./components/AboutUs";
 import FAQs from "./components/FAQs";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import PatientForm from "./components/PatientForm";
+import PatientConsent from "./components/PatientConsent";
+import PatientBasicInfo from "./components/PatientBasicInfo";
 import Medicines from "./components/Medicines";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -71,6 +73,20 @@ function App() {
             <div className="App">
               <Header />
               <PrivacyPolicy />
+              <Footer />
+            </div>
+          } />
+          <Route path="/patient-basic-info" element={
+            <div className="App">
+              <Header />
+              <PatientBasicInfo />
+              <Footer />
+            </div>
+          } />
+          <Route path="/patient-consent" element={
+            <div className="App">
+              <Header />
+              <PatientConsent />
               <Footer />
             </div>
           } />

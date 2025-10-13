@@ -8,8 +8,25 @@ function PatientForm() {
     name: '',
     email: '',
     phone: '',
-    gender: ''
+    gender: '',
+    dateOfBirth: '',
+    emergencyPhone: ''
   });
+
+  // Load basic info from localStorage if available
+  React.useEffect(() => {
+    const basicInfo = localStorage.getItem('patientBasicInfo');
+    if (basicInfo) {
+      const parsed = JSON.parse(basicInfo);
+      setFormData(prev => ({
+        ...prev,
+        name: parsed.name,
+        email: parsed.email,
+        phone: parsed.phone,
+        gender: parsed.gender
+      }));
+    }
+  }, []);
 
   const navigate = useNavigate(); // Initialize navigate
 
@@ -23,14 +40,25 @@ function PatientForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Patient ID: ${formData.patientId}\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nGender: ${formData.gender}`);
+    const alertMessage = `
+Patient ID: ${formData.patientId}
+Name: ${formData.name}
+Email: ${formData.email}
+Phone: ${formData.phone}
+Gender: ${formData.gender}
+Date of Birth: ${formData.dateOfBirth}
+Emergency Contact Phone: ${formData.emergencyPhone}
+    `;
+    alert(alertMessage.trim());
     // Reset form
     setFormData({
       patientId: '',
       name: '',
       email: '',
       phone: '',
-      gender: ''
+      gender: '',
+      dateOfBirth: '',
+      emergencyPhone: ''
     });
     // Redirect to prescription page
     navigate('/prescription');
@@ -104,9 +132,34 @@ function PatientForm() {
               <option value="other">Other</option>
             </select>
           </div>
+          <div className="form-group">
+            <label htmlFor="dateOfBirth">📅 Date of Birth:</label>
+            <input
+              type="date"
+              id="dateOfBirth"
+              name="dateOfBirth"
+              value={formData.dateOfBirth}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="emergencyPhone">🚨 Emergency Contact Phone:</label>
+            <input
+              type="tel"
+              id="emergencyPhone"
+              name="emergencyPhone"
+              value={formData.emergencyPhone}
+              onChange={handleChange}
+              placeholder="Emergency contact phone"
+              required
+            />
+          </div>
         </div>
 
-        <button type="submit" className="submit-button">Submit</button>
+        <button type="submit" className="submit-button">Submit Patient Information</button>
       </form>
     </div>
   );
