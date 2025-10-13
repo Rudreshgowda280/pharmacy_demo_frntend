@@ -14,6 +14,8 @@ function Hero() {
             <Link to="/patient-form" className="patient-form-button">Patient Form</Link>
           </div>
         </div>
+       
+        
       </div>
     </div>
   );

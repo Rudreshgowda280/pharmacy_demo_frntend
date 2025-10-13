@@ -1,3 +1,6 @@
-# TODO List for Removing Image from Hero Section
+# TODO: Enhance Navbar UI Designs and Animations
 
-- [x] Edit Hero.jsx to remove the hero-image div, keeping only the hero-content div intact.
+- [x] Clean up duplicated styles in Header.css
+- [x] Add modern UI designs (gradients, better colors, spacing)
+- [x] Incorporate animations (slide-down header, hover transitions, pulse cart count)
+- [x] Ensure responsive design
