@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/Login.css';
 
-function Login() {
+function Login({ isAdmin = false }) {
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -30,33 +30,40 @@ function Login() {
       // Mock successful login
       const userData = {
         email: formData.email,
-        name: formData.name,
-        id: '12345'
+        name: isAdmin ? 'Admin' : formData.name,
+        id: '12345',
+        isAdmin: isAdmin
       };
       login(userData);
       setLoading(false);
       alert('Login successful!');
-      navigate('/');
+      if (isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     }, 1500);
   };
 
   return (
     <div className="login-container fade-in">
       <div className="login-form">
-        <h2>Login to Your Account</h2>
+        <h2>{isAdmin ? 'Admin Login' : 'Login to Your Account'}</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="Enter your full name"
-            />
-          </div>
+          {!isAdmin && (
+            <div className="form-group">
+              <label htmlFor="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="Enter your full name"
+              />
+            </div>
+          )}
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -85,9 +92,11 @@ function Login() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <p className="register-link">
-          Don't have an account? <a href="/register">Register here</a>
-        </p>
+        {!isAdmin && (
+          <p className="register-link">
+            Don't have an account? <a href="/register">Register here</a>
+          </p>
+        )}
       </div>
     </div>
   );

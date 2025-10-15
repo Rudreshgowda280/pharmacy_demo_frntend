@@ -23,8 +23,7 @@ function Header() {
         <Link to="/medicines"><button>Medicines</button></Link>
         <Link to="/consultation"><button>Consultation</button></Link>
         <Link to="/about-us"><button>About Us</button></Link>
-        <Link to="/faqs"><button>FAQs</button></Link>
-      </nav>
+        </nav>
 
       <div className="header-right">
         <Link to="/cart" className="cart-link">

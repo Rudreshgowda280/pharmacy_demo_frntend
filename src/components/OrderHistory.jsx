@@ -14,6 +14,9 @@ function OrderHistory() {
   const generateReceipt = (order) => {
     const doc = new jsPDF();
 
+    // Conversion rate: 1 USD = 83 INR
+    const usdToInr = 83;
+
     // Header
     doc.setFontSize(18);
     doc.text("Pharmacy Receipt", 14, 15);
@@ -39,14 +42,15 @@ function OrderHistory() {
 
     (order.items || []).forEach(item => {
       if (!item || !item.name) return;
-      const price = parseFloat(item.price.replace('$', '')) || 0;
-      const subtotal = (price * item.quantity).toFixed(2);
+      const priceUsd = parseFloat(item.price.replace('$', '')) || 0;
+      const priceInr = (priceUsd * usdToInr).toFixed(2);
+      const subtotalInr = (priceUsd * item.quantity * usdToInr).toFixed(2);
       tableRows.push([
         item.name,
         `${item.brand || ''} ${item.strength || ''} ${item.packSize || ''}`,
         item.quantity,
-        `$${price.toFixed(2)}`,
-        `$${subtotal}`
+        `₹${priceInr}`,
+        `₹${subtotalInr}`
       ]);
     });
 
@@ -60,8 +64,9 @@ function OrderHistory() {
 
     // Total Section
     const finalY = doc.lastAutoTable.finalY || 120;
+    const totalInr = (order.total * usdToInr).toFixed(2);
     doc.setFontSize(14);
-    doc.text(`Total: $${order.total}`, 14, finalY + 20);
+    doc.text(`Total: ₹${totalInr}`, 14, finalY + 20);
 
     // Footer
     doc.setFontSize(10);
