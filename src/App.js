@@ -200,6 +200,14 @@ const router = createBrowserRouter([
         path: "orders",
         element: <Admin />,
       },
+      {
+        path: "approvals",
+        element: <Admin />,
+      },
+      {
+        path: "reports",
+        element: <Admin />,
+      },
     ],
   },
 

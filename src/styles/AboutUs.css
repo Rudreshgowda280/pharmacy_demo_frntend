@@ -1,4 +1,4 @@
-.about-us {
+y.about-us {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -19,22 +19,44 @@
 .about-header p {
   font-size: 1.2rem;
   color: #666;
+  margin-bottom: 20px;
+}
+
+.header-image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }
 
 .about-content {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
 }
 
-.about-content section {
+.section-card {
   background-color: #f8f9fa;
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
 }
 
-.about-content h2 {
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.section-card h2 {
   font-size: 1.8rem;
   color: #333;
   margin-bottom: 20px;
@@ -42,15 +64,25 @@
   padding-bottom: 10px;
 }
 
-.about-content p {
+.section-card p {
   font-size: 1rem;
   color: #555;
   line-height: 1.6;
 }
 
+.section-image {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .values ul {
   list-style-type: none;
   padding: 0;
+  text-align: left;
 }
 
 .values li {
@@ -72,11 +104,15 @@
     font-size: 2rem;
   }
 
-  .about-content section {
+  .section-card {
     padding: 20px;
   }
 
-  .about-content h2 {
+  .section-card h2 {
     font-size: 1.5rem;
+  }
+
+  .icon {
+    font-size: 2.5rem;
   }
 }

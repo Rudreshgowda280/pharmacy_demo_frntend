@@ -131,21 +131,91 @@ export const ProductsProvider = ({ children }) => {
     const today = new Date().toDateString();
     const thisMonth = new Date().getMonth();
     const thisYear = new Date().getFullYear();
+    const thisWeek = new Date();
+    thisWeek.setDate(thisWeek.getDate() - 7);
 
     let dailyRevenue = 0;
+    let weeklyRevenue = 0;
     let monthlyRevenue = 0;
+    let yearlyRevenue = 0;
 
     orders.forEach(order => {
       const orderDate = new Date(order.date);
       if (orderDate.toDateString() === today) {
         dailyRevenue += order.total;
       }
+      if (orderDate >= thisWeek) {
+        weeklyRevenue += order.total;
+      }
       if (orderDate.getMonth() === thisMonth && orderDate.getFullYear() === thisYear) {
         monthlyRevenue += order.total;
       }
+      if (orderDate.getFullYear() === thisYear) {
+        yearlyRevenue += order.total;
+      }
     });
 
-    return { dailyRevenue, monthlyRevenue };
+    return { dailyRevenue, weeklyRevenue, monthlyRevenue, yearlyRevenue };
+  };
+
+  const getTopSellingProducts = () => {
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const productSales = {};
+
+    orders.forEach(order => {
+      (order.items || []).forEach(item => {
+        if (item && item.name) {
+          const key = `${item.name}-${item.brand}`;
+          if (!productSales[key]) {
+            productSales[key] = { name: item.name, brand: item.brand, quantity: 0, revenue: 0 };
+          }
+          productSales[key].quantity += item.quantity;
+          productSales[key].revenue += parseFloat(item.price.replace('$', '')) * item.quantity;
+        }
+      });
+    });
+
+    return Object.values(productSales).sort((a, b) => b.quantity - a.quantity).slice(0, 10);
+  };
+
+  const getRevenueByCategory = () => {
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const categoryRevenue = {};
+
+    orders.forEach(order => {
+      (order.items || []).forEach(item => {
+        if (item && item.name) {
+          // Find category by matching product name
+          const category = categories.find(cat =>
+            cat.medicines.some(med => med.name === item.name)
+          );
+          if (category) {
+            if (!categoryRevenue[category.name]) {
+              categoryRevenue[category.name] = 0;
+            }
+            categoryRevenue[category.name] += parseFloat(item.price.replace('$', '')) * item.quantity;
+          }
+        }
+      });
+    });
+
+    return categoryRevenue;
+  };
+
+  const getOrderTrends = () => {
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const monthlyOrders = {};
+
+    orders.forEach(order => {
+      const orderDate = new Date(order.date);
+      const monthKey = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
+      if (!monthlyOrders[monthKey]) {
+        monthlyOrders[monthKey] = 0;
+      }
+      monthlyOrders[monthKey]++;
+    });
+
+    return monthlyOrders;
   };
 
   const submitProductForApproval = (product) => {
@@ -174,6 +244,9 @@ export const ProductsProvider = ({ children }) => {
     importStock,
     exportStock,
     getRevenue,
+    getTopSellingProducts,
+    getRevenueByCategory,
+    getOrderTrends,
     submitProductForApproval,
     approveProduct,
     rejectProduct

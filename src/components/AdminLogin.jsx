@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import '../styles/Login.css';
+import '../styles/AdminLogin.css';
 
 function AdminLogin() {
   const { login } = useAuth();
@@ -10,15 +10,18 @@ function AdminLogin() {
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(''); // Clear error on input change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
       // Validate admin credentials
       if (formData.email === 'admin@hynopharmacy.com' && formData.password === 'admin123') {
@@ -34,44 +37,64 @@ function AdminLogin() {
         throw new Error('Invalid admin credentials');
       }
     } catch (error) {
-      alert('Login failed: ' + error.message);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h2>Admin Login</h2>
+    <div className="admin-login-container">
+      <div className="admin-login-card">
+        <div className="admin-logo">
+          <img src="/images/logoupdate.jpg" alt="Hyno Pharmacy Logo" />
+          <h2>Admin Portal</h2>
+        </div>
+        <p className="admin-subtitle">Secure access for administrators only</p>
+
+        {error && <div className="admin-error-message">{error}</div>}
+
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+          <div className="admin-form-group">
+            <label htmlFor="email">Email Address</label>
+            <div className="admin-input-wrapper">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter admin email"
+                required
+              />
+              <span className="input-icon">📧</span>
+            </div>
           </div>
-          <div className="form-group">
+
+          <div className="admin-form-group">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="admin-input-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter password"
+                required
+              />
+              <span className="input-icon">🔒</span>
+            </div>
           </div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+
+          <button type="submit" className="admin-login-btn" disabled={loading}>
+            {loading ? 'Authenticating...' : 'Access Admin Panel'}
           </button>
         </form>
-        <p>Admin access only.</p>
+
+        <div className="admin-footer">
+          <p>Authorized personnel only. <a href="/" className="admin-link">Return to Store</a></p>
+        </div>
       </div>
     </div>
   );

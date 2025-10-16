@@ -11,7 +11,7 @@ import '../styles/Admin.css';
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 function Admin() {
-  const { categories, addProduct, updateProduct, removeProduct, importStock, exportStock, getRevenue } = useProducts();
+  const { categories, addProduct, updateProduct, removeProduct, importStock, exportStock, getRevenue, getTopSellingProducts, getRevenueByCategory, getOrderTrends, pendingProducts, approveProduct, rejectProduct } = useProducts();
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -79,7 +79,7 @@ function Admin() {
     }
   };
 
-  const { dailyRevenue, monthlyRevenue } = getRevenue();
+  const { dailyRevenue, weeklyRevenue, monthlyRevenue, yearlyRevenue } = getRevenue();
 
   if (!user) {
     return <AdminLogin />;
@@ -97,6 +97,12 @@ function Admin() {
         </button>
         <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => navigate('/admin/orders')}>
           Orders
+        </button>
+        <button className={activeTab === 'approvals' ? 'active' : ''} onClick={() => navigate('/admin/approvals')}>
+          Approvals
+        </button>
+        <button className={activeTab === 'reports' ? 'active' : ''} onClick={() => navigate('/admin/reports')}>
+          Reports
         </button>
       </div>
 
@@ -428,6 +434,125 @@ function Admin() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'approvals' && (
+        <div className="approvals-management">
+          <h2>Product Approvals</h2>
+          {pendingProducts.length === 0 ? (
+            <p>No pending products for approval.</p>
+          ) : (
+            <div className="pending-products-list">
+              {pendingProducts.map((product) => (
+                <div key={product.id} className="pending-product-card">
+                  <div className="product-header">
+                    <h3>{product.name}</h3>
+                    <p>Submitted: {new Date(product.submittedAt).toLocaleDateString()}</p>
+                  </div>
+                  <div className="product-details">
+                    <p><strong>Category:</strong> {product.category}</p>
+                    <p><strong>Price:</strong> {product.price}</p>
+                    <p><strong>Description:</strong> {product.description}</p>
+                    <p><strong>Brand:</strong> {product.brand}</p>
+                    <p><strong>Strength:</strong> {product.strength}</p>
+                    <p><strong>Pack Size:</strong> {product.packSize}</p>
+                    <p><strong>Stock:</strong> {product.stock}</p>
+                  </div>
+                  <div className="approval-actions">
+                    <button onClick={() => approveProduct(product.id)}>Approve</button>
+                    <button onClick={() => rejectProduct(product.id)}>Reject</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'reports' && (
+        <div className="reports-section">
+          <h2>Reports & Analytics</h2>
+
+          <div className="report-cards">
+            <div className="report-card">
+              <h3>Revenue Breakdown</h3>
+              <div className="revenue-breakdown">
+                <div className="revenue-item">
+                  <span>Daily:</span>
+                  <span>₹{(dailyRevenue * usdToInr).toFixed(2)}</span>
+                </div>
+                <div className="revenue-item">
+                  <span>Weekly:</span>
+                  <span>₹{(weeklyRevenue * usdToInr).toFixed(2)}</span>
+                </div>
+                <div className="revenue-item">
+                  <span>Monthly:</span>
+                  <span>₹{(monthlyRevenue * usdToInr).toFixed(2)}</span>
+                </div>
+                <div className="revenue-item">
+                  <span>Yearly:</span>
+                  <span>₹{(yearlyRevenue * usdToInr).toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="report-card">
+              <h3>Revenue by Category</h3>
+              <div className="category-revenue">
+                {Object.entries(getRevenueByCategory()).map(([category, revenue]) => (
+                  <div key={category} className="category-item">
+                    <span>{category}:</span>
+                    <span>₹{(revenue * usdToInr).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="top-selling-products">
+            <h3>Top Selling Products</h3>
+            <div className="top-products-list">
+              {getTopSellingProducts().map((product, index) => (
+                <div key={index} className="top-product-item">
+                  <span className="rank">#{index + 1}</span>
+                  <div className="product-info">
+                    <h4>{product.name}</h4>
+                    <p>{product.brand}</p>
+                  </div>
+                  <div className="product-stats">
+                    <p>Quantity: {product.quantity}</p>
+                    <p>Revenue: ₹{(product.revenue * usdToInr).toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="order-trends">
+            <h3>Order Trends</h3>
+            <div className="trends-chart">
+              <Bar
+                data={{
+                  labels: Object.keys(getOrderTrends()),
+                  datasets: [{
+                    label: 'Orders',
+                    data: Object.values(getOrderTrends()),
+                    backgroundColor: '#4CAF50',
+                    borderColor: '#45a049',
+                    borderWidth: 1
+                  }]
+                }}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Monthly Order Trends' }
+                  }
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
 

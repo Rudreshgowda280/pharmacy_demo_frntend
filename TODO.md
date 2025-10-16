@@ -1,12 +1,7 @@
-# Admin Page Enhancement TODO
+# TODO: Enhance Admin Login Page UI and Admin Dashboard Formatting
 
 ## Tasks
-- [ ] Style tab navigation buttons to look like animated links
-- [ ] Update background to blue and white combination
-- [ ] Add motivational lines section to the admin page
-- [ ] Test the changes on http://localhost:3001/admin
-
-## Details
-- Buttons: Remove button-like appearance, make them look like links with hover animations
-- Background: Use a gradient or pattern combining blue and white
-- Motivational Lines: Add a section with inspiring quotes for admins
+- [x] Create `AdminLogin.css` with modern, professional styles including card layout, gradients, icons, and responsive design.
+- [x] Update `AdminLogin.jsx` to include logo, icons for inputs, improved button, and import the new CSS.
+- [x] Improve Admin dashboard page formatting and alignment in `Admin.css`.
+- [ ] Test the updated admin login page and dashboard for responsiveness and functionality.
