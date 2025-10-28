@@ -206,6 +206,32 @@
   box-shadow: 0 6px 12px rgba(0,123,255,0.4);
 }
 
+.order-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.cancel-btn {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(220,53,69,0.3);
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #a02622 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(220,53,69,0.4);
+}
+
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }

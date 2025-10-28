@@ -112,3 +112,24 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+.consultation-link {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.consultation-link p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.consultation-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.consultation-link a:hover {
+  text-decoration: underline;
+}

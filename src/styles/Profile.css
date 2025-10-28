@@ -1,18 +1,33 @@
 .profile-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 40px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-  animation: fadeIn 0.6s ease-in;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  animation: bounceIn 1s ease-out, gradientShift 3s ease-in-out infinite;
+  position: relative;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.profile-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px 16px 0 0;
+  animation: shimmer 2s ease-in-out infinite;
 }
 
 .profile-container h2 {
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 28px;
-  color: #333;
+  margin-bottom: 40px;
+  font-size: 32px;
+  color: #2c3e50;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .profile-info {
@@ -23,23 +38,127 @@
 }
 
 .profile-section {
-  flex: 1 1 280px;
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-  animation: slideUp 0.5s ease-out;
+  flex: 1 1 300px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  animation: bounceIn 0.8s ease-out, pulseGlow 2s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease, filter 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-section:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+.profile-section:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.profile-section:nth-child(3) {
+  animation-delay: 0.9s;
+}
+
+.profile-section:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.2);
+  filter: brightness(1.05);
 }
 
 .profile-section h3 {
-  margin-bottom: 15px;
-  color: #495057;
-  font-size: 20px;
+  margin-bottom: 20px;
+  color: #34495e;
+  font-size: 22px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-section h3::before {
+  content: '📋';
+  font-size: 24px;
 }
 
 .profile-section p {
-  margin: 8px 0;
-  color: #6c757d;
+  margin: 12px 0;
+  color: #5a6c7d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.profile-section p strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.profile-section input, .profile-section select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  animation: slideInLeft 0.4s ease-out;
+}
+
+.profile-section input:focus, .profile-section select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.profile-section button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin-right: 10px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.profile-section button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.8s, height 0.8s;
+}
+
+.profile-section button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.profile-section button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  animation-play-state: paused;
+}
+
+.profile-section button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.edit-form {
+  animation: slideInLeft 0.5s ease-out;
 }
 
 .order-list, .prescription-list {
@@ -48,17 +167,35 @@
 }
 
 .order-item, .prescription-item {
-  background: white;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  animation: fadeInUp 0.4s ease-out;
+  gap: 12px;
+  animation: bounceIn 0.6s ease-out, gradientShift 4s ease-in-out infinite;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease, filter 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.order-item:nth-child(odd), .prescription-item:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.order-item:nth-child(even), .prescription-item:nth-child(even) {
+  animation-delay: 0.3s;
+}
+
+.order-item:hover, .prescription-item:hover {
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  filter: brightness(1.03);
 }
 
 .order-item span, .prescription-item span {
@@ -67,13 +204,44 @@
 }
 
 .download-link {
-  color: #007bff;
+  color: #3498db;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(52, 152, 219, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.download-link::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(102, 126, 234, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.download-link:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .download-link:hover {
-  text-decoration: underline;
+  background: #3498db;
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.download-link:active {
+  transform: scale(0.95);
 }
 
 .fade-in {
@@ -83,6 +251,24 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes slideUp {
@@ -104,6 +290,55 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1), 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1), 0 0 0 15px rgba(102, 126, 234, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 

@@ -5,78 +5,166 @@
   position: relative;
 }
 
-.dropdown-header {
+.search-header {
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-toggle {
+  padding: 10px 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  overflow: hidden;
-}
-
-.dropdown-header input {
-  flex-grow: 1;
-  border: none;
-  padding: 8px;
-  font-size: 14px;
-  outline: none;
-}
-
-.dropdown-header button {
-  background: #f0f0f0;
-  border: none;
-  padding: 8px 12px;
+  background: white;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dropdown-toggle:hover {
+  background: #f0f0f0;
 }
 
 .dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
   background: white;
   border: 1px solid #ccc;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  max-height: 200px;
-  overflow-y: auto;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   z-index: 1000;
+  min-width: 200px;
+  animation: slideDown 0.2s ease-out;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
-  padding: 10px;
+  gap: 8px;
+  padding: 10px 15px;
+  border: none;
+  background: none;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  transition: background 0.2s;
 }
 
 .dropdown-item:hover {
-  background: #f9f9f9;
+  background: #f8f9fa;
+}
+
+.dropdown-item.active {
+  background: #007bff;
+  color: white;
 }
 
 .dropdown-item img {
-  width: 40px;
-  height: 40px;
-  margin-right: 10px;
+  width: 20px;
+  height: 20px;
   object-fit: cover;
 }
 
-.dropdown-item h4 {
-  margin: 0;
+.search-input {
+  flex: 1;
+  min-width: 150px;
+  max-width: 250px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.sort-select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background: white;
+  cursor: pointer;
+}
+
+.categories-small {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.category-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+  background: #f0f0f0;
+}
+
+.category-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.category-btn img {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+}
+
+.clear-btn {
+  padding: 10px 15px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   font-size: 14px;
 }
 
-.dropdown-item p {
-  margin: 0;
-  font-size: 12px;
-  color: #666;
+.clear-btn:hover {
+  background: #c82333;
+}
+
+.toggle-medicines-btn {
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.toggle-medicines-btn:hover {
+  background: #0056b3;
 }
 
 .no-results {
-  padding: 10px;
+  padding: 20px;
   text-align: center;
   color: #999;
+  font-size: 16px;
 }
 
 .medicines-list {
@@ -90,8 +178,42 @@
 
 .medicines-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
+  padding: 10px;
+}
+
+.small-grid {
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.small-card {
+  width: 200px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.small-card .medicine-header h4 {
+  font-size: 16px;
+}
+
+.small-card .description {
+  font-size: 12px;
+}
+
+.small-card .detail {
+  font-size: 11px;
+}
+
+.small-card .price {
+  font-size: 16px;
+}
+
+.small-card .add-to-cart-btn {
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 .medicine-card {
@@ -193,6 +315,17 @@
   from {
     opacity: 0;
     transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;

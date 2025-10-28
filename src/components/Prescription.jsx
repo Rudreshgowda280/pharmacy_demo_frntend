@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Prescription.css';
 
 function Prescription() {
@@ -33,7 +33,7 @@ function Prescription() {
   return (
     <div className="prescription-page fade-in">
       <div className="upload-container">
-        <img src="https://source.unsplash.com/400x300/?prescription" alt="Prescription" />
+        <img src="/images/123456789.jpg" alt="Prescription" />
         <h2>Upload Your Prescription</h2>
         <p>Please select an image or PDF of your prescription to proceed with your order.</p>
         <div className="file-input-container">

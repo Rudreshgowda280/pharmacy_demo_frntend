@@ -6,7 +6,6 @@ import "../styles/Login.css";
 function Login({ isAdmin = false }) {
   const { login } = useAuth();
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
@@ -58,21 +57,6 @@ function Login({ isAdmin = false }) {
       <div className="login-form">
         <h2>{isAdmin ? "Admin Login" : "Login to Your Account"}</h2>
         <form onSubmit={handleSubmit}>
-          {!isAdmin && (
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="Enter your full name"
-              />
-            </div>
-          )}
-
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input

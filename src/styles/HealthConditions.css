@@ -1,0 +1,44 @@
+.health-section {
+  text-align: left;
+  padding: 30px 60px;
+}
+
+.health-section h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+.conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.condition-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.condition-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.icon {
+  font-size: 30px;
+  color: orange;
+}
+
+.condition-card p {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}

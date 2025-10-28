@@ -4,10 +4,25 @@
   text-align: center;
 }
 
+.medicine-offers.entrance-animation {
+  animation: slideInRight 1s ease-out;
+}
+
 .medicine-offers h2 {
   font-size: 2.5rem;
   margin-bottom: 30px;
   color: #333;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .offers-grid {

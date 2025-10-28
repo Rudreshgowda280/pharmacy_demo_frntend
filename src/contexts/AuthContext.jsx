@@ -8,6 +8,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,6 +17,18 @@ export const AuthProvider = ({ children }) => {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+
+    // Load admins
+    const storedAdmins = localStorage.getItem('admins');
+    if (storedAdmins) {
+      setAdmins(JSON.parse(storedAdmins));
+    } else {
+      // Add default admin
+      const defaultAdmin = { email: 'admin@hynopharmacy.com', password: 'admin123', name: 'Admin', id: 'admin123', isAdmin: true };
+      setAdmins([defaultAdmin]);
+      localStorage.setItem('admins', JSON.stringify([defaultAdmin]));
+    }
+
     setLoading(false);
   }, []);
 
@@ -29,10 +42,18 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
+  const registerAdmin = (adminData) => {
+    const updatedAdmins = [...admins, adminData];
+    setAdmins(updatedAdmins);
+    localStorage.setItem('admins', JSON.stringify(updatedAdmins));
+  };
+
   const value = {
     user,
+    admins,
     login,
     logout,
+    registerAdmin,
     isAuthenticated: !!user
   };
 

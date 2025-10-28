@@ -24,13 +24,6 @@ function FeaturedProducts() {
       details: "Includes blood tests, ECG, and more — designed for your wellness.",
       image: "https://via.placeholder.com/200x200/dc3545/ffffff?text=Health+Checkup",
     },
-    {
-      id: 4,
-      title: "Emergency Medical Kit",
-      description: "Be prepared with our essential emergency kit.",
-      details: "Includes basic first-aid and medicines for emergency situations.",
-      image: "https://via.placeholder.com/200x200/17a2b8/ffffff?text=Emergency+Kit",
-    },
   ];
 
   const [flippedCards, setFlippedCards] = useState([]);
@@ -44,7 +37,7 @@ function FeaturedProducts() {
   };
 
   return (
-    <div className="featured-products">
+    <div className="featured-products entrance-animation">
       <h2>Featured Advertisements</h2>
       <div className="products-grid">
         {ads.map((ad) => (

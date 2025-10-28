@@ -21,9 +21,8 @@ function Header() {
         <Link to="/"><button>Home</button></Link>
         <Link to="/prescription"><button>Prescription</button></Link>
         <Link to="/medicines"><button>Medicines</button></Link>
-        <Link to="/consultation"><button>Consultation</button></Link>
         <Link to="/about-us"><button>About Us</button></Link>
-        </nav>
+      </nav>
 
       <div className="header-right">
         <Link to="/cart" className="cart-link">
@@ -46,7 +45,6 @@ function Header() {
           ) : (
             <div className="auth-buttons">
               <Link to="/login"><button className="login-btn">Login</button></Link>
-              <Link to="/register"><button className="register-btn">Register</button></Link>
             </div>
           )}
         </div>

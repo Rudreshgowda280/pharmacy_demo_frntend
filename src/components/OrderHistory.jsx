@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';  // ✅ correct import
 import '../styles/OrderHistory.css';
 
 function OrderHistory() {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
 
-  // Get orders from localStorage
-  const orders = JSON.parse(localStorage.getItem('orders') || '[]') || [];
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Get orders from localStorage and filter by user
+  const [orders, setOrders] = React.useState(
+    (JSON.parse(localStorage.getItem('orders') || '[]') || [])
+      .filter(order => order.userId === user?.id)
+  );
 
   // ✅ Generate Receipt PDF for a given order
   const generateReceipt = (order) => {
@@ -76,6 +88,16 @@ function OrderHistory() {
     doc.save(`receipt_order_${order.id}.pdf`);
   };
 
+  // Cancel Order Function
+  const cancelOrder = (orderId) => {
+    const allOrders = JSON.parse(localStorage.getItem('orders') || '[]') || [];
+    const updatedOrders = allOrders.filter(order => order.id !== orderId);
+    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    // Update local state with filtered orders for current user
+    setOrders(updatedOrders.filter(order => order.userId === user?.id));
+    alert('Order cancelled successfully.');
+  };
+
   if (orders.length === 0) {
     return (
       <div className="order-history-container fade-in">
@@ -129,9 +151,14 @@ function OrderHistory() {
             </div>
 
             {/* ✅ Download Receipt Button */}
-            <button onClick={() => generateReceipt(order)} className="download-btn">
-              Download Receipt
-            </button>
+            <div className="order-actions">
+              <button onClick={() => generateReceipt(order)} className="download-btn">
+                Download Receipt
+              </button>
+              <button onClick={() => cancelOrder(order.id)} className="cancel-btn">
+                Cancel Order
+              </button>
+            </div>
           </div>
         ))}
       </div>

@@ -6,27 +6,27 @@ function MedicineOffers() {
     {
       title: "20% Off on All Medicines",
       description: "Get 20% discount on all prescription and over-the-counter medicines. Valid on orders above ₹500.",
-      icon: "💊"
+      icon: ""
     },
     {
       title: "Buy 1 Get 1 Free on Vitamins",
       description: "Purchase one vitamin supplement and get another free. Boost your health with our vitamin range.",
-      icon: "🧴"
+      icon: ""
     },
     {
       title: "Exclusive Discounts on Baby Care",
       description: "Special 15% off on baby care products including diapers, lotions, and baby food. Limited time offer.",
-      icon: "👶"
+      icon: ""
     },
     {
       title: "Free Delivery on Orders Above ₹1000",
       description: "Enjoy free home delivery on all orders above ₹1000. No delivery charges, no hidden fees.",
-      icon: "🚚"
+      icon: ""
     }
   ];
 
   return (
-    <div className="medicine-offers">
+    <div className="medicine-offers entrance-animation">
       <h2>Medicine Offers & Advantages</h2>
       <div className="offers-grid">
         {offers.map((offer, index) => (

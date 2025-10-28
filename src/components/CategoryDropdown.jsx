@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useCart } from "../contexts/CartContext";
 import { useProducts } from "../contexts/ProductsContext";
 import "../styles/CategoryDropdown.css";
@@ -8,116 +8,163 @@ function CategoryDropdown() {
   const { categories } = useProducts();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [isOpen, setIsOpen] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [sortOption, setSortOption] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Get URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryFromUrl = urlParams.get('category');
 
   useEffect(() => {
-    if (searchTerm) {
-      const exactMatch = categories.find(category =>
-        category.name.toLowerCase() === searchTerm.toLowerCase()
-      );
-      if (exactMatch) {
-        setSelectedCategory(exactMatch);
-        setIsOpen(false);
-        setSearchTerm("");
-      }
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
     }
-  }, [searchTerm, categories]);
+  }, [categoryFromUrl]);
 
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Flatten all medicines from all categories
+  const allMedicines = useMemo(() => {
+    return categories.flatMap(category =>
+      category.medicines.map(medicine => ({
+        ...medicine,
+        categoryName: category.name
+      }))
+    );
+  }, [categories]);
 
+  // Filter and sort medicines
+  const filteredAndSortedMedicines = useMemo(() => {
+    let filtered = allMedicines;
 
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(medicine =>
+        medicine.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-  const handleSelect = (category) => {
-    setSelectedCategory(category);
-    setIsOpen(false);
-    setSearchTerm("");
+    // Filter by selected category
+    if (selectedCategory) {
+      filtered = filtered.filter(medicine =>
+        medicine.categoryName === selectedCategory
+      );
+    }
+
+    // Sort by price
+    if (sortOption === "high") {
+      filtered = filtered.sort((a, b) => {
+        const priceA = parseFloat(a.price.replace('₹', '').replace(',', ''));
+        const priceB = parseFloat(b.price.replace('₹', '').replace(',', ''));
+        return priceB - priceA;
+      });
+    } else if (sortOption === "low") {
+      filtered = filtered.sort((a, b) => {
+        const priceA = parseFloat(a.price.replace('₹', '').replace(',', ''));
+        const priceB = parseFloat(b.price.replace('₹', '').replace(',', ''));
+        return priceA - priceB;
+      });
+    }
+
+    return filtered;
+  }, [allMedicines, searchTerm, selectedCategory, sortOption]);
+
+  const handleCategorySelect = (categoryName) => {
+    setSelectedCategory(selectedCategory === categoryName ? null : categoryName);
+    setIsDropdownOpen(false); // Close dropdown after selection
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleClear = () => {
     setSelectedCategory(null);
     setSearchTerm("");
+    setSortOption("");
   };
 
   return (
     <div className="category-dropdown">
-      <div className="dropdown-header">
+      <div className="search-header">
+        <div className="dropdown-container">
+          <button onClick={toggleDropdown} className="dropdown-toggle">
+            Categories ▼
+          </button>
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              {categories.map((category, index) => (
+                <button
+                  key={index}
+                  className={`dropdown-item ${selectedCategory === category.name ? 'active' : ''}`}
+                  onClick={() => handleCategorySelect(category.name)}
+                >
+                  <img src={category.image} alt={category.name} />
+                  <span>{category.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <input
           type="text"
-          placeholder="Search categories..."
+          placeholder="Search medicines..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={() => setIsOpen(true)}
+          className="search-input"
         />
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {selectedCategory ? selectedCategory.name : "Select Category"} ▼
-        </button>
-        {selectedCategory && (
-          <button onClick={handleClear} style={{ marginLeft: '5px' }}>Clear</button>
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="sort-select"
+        >
+          <option value="">Sort by Price</option>
+          <option value="high">High Price</option>
+          <option value="low">Low Price</option>
+        </select>
+        {(selectedCategory || searchTerm || sortOption) && (
+          <button onClick={handleClear} className="clear-btn">Clear All</button>
         )}
+
       </div>
-      {isOpen && (
-        <div className="dropdown-menu">
-          {filteredCategories.length > 0 ? (
-            filteredCategories.map((category, index) => (
+      {(selectedCategory || searchTerm || sortOption) && (
+        <div className="medicines-list">
+        <h3>All Medicines</h3>
+        <div className="medicines-grid">
+          {filteredAndSortedMedicines.length > 0 ? (
+            filteredAndSortedMedicines.map((medicine, index) => (
               <div
-                key={index}
-                className="dropdown-item"
-                onClick={() => handleSelect(category)}
+                key={medicine.id}
+                className="medicine-card"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <img src={category.image} alt={category.name} />
-                <div>
-                  <h4>{category.name}</h4>
-                  <p>{category.description}</p>
+                <div className="medicine-header">
+                  <h4>{medicine.name}</h4>
+                  <span className="brand">{medicine.brand}</span>
+                </div>
+                <p className="description">{medicine.description}</p>
+                <div className="medicine-details">
+                  <span className="detail">Strength: {medicine.strength}</span>
+                  <span className="detail">Pack Size: {medicine.packSize}</span>
+                  <span className="detail">Stock: {medicine.stock}</span>
+                </div>
+                <div className="medicine-footer">
+                  <span className="price">{medicine.price}</span>
+                  <button
+                    className="add-to-cart-btn"
+                    onClick={() => addToCart(medicine)}
+                    disabled={medicine.stock <= 0}
+                  >
+                    {medicine.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                  </button>
                 </div>
               </div>
             ))
           ) : (
-            <div className="no-results">No categories found</div>
+            <div>No medicines found.</div>
           )}
         </div>
-      )}
-      <div className="medicines-list">
-        {selectedCategory ? (
-          <>
-            <h3>{selectedCategory.name} Medicines</h3>
-            <div className="medicines-grid">
-              {selectedCategory.medicines.length > 0 ? (
-                selectedCategory.medicines.map((medicine, index) => (
-                  <div key={index} className="medicine-card">
-                    <div className="medicine-header">
-                      <h4>{medicine.name}</h4>
-                      <span className="brand">{medicine.brand}</span>
-                    </div>
-                    <p className="description">{medicine.description}</p>
-                    <div className="medicine-details">
-                      <span className="detail">Strength: {medicine.strength}</span>
-                      <span className="detail">Pack Size: {medicine.packSize}</span>
-                      <span className="detail">Stock: {medicine.stock}</span>
-                    </div>
-                    <div className="medicine-footer">
-                      <span className="price">{medicine.price}</span>
-                      <button
-                        className="add-to-cart-btn"
-                        onClick={() => addToCart(medicine)}
-                        disabled={medicine.stock <= 0}
-                      >
-                        {medicine.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="no-results">No medicines found</div>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className="no-results">Please select a category to see medicines.</div>
-        )}
       </div>
+      )}
     </div>
   );
 }

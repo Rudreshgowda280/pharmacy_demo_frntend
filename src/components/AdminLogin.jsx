@@ -22,22 +22,38 @@ function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
     try {
-      // Validate admin credentials
-      if (formData.email === 'admin@hynopharmacy.com' && formData.password === 'admin123') {
-        const userData = {
+      // ✅ Send login request to backend
+      const response = await fetch('http://localhost:8080/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           email: formData.email,
-          name: 'Admin',
-          id: 'admin123',
-          isAdmin: true
-        };
-        login(userData);
-        navigate('/admin');
-      } else {
-        throw new Error('Invalid admin credentials');
+          password: formData.password
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Invalid admin credentials');
       }
-    } catch (error) {
-      setError(error.message);
+
+      const admin = await response.json();
+
+      // ✅ Store logged-in admin in context + localStorage
+      const userData = {
+        email: admin.email,
+        name: admin.name,
+        id: admin.id,
+        isAdmin: true
+      };
+      login(userData);
+
+      // ✅ Redirect to admin dashboard
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -93,7 +109,12 @@ function AdminLogin() {
         </form>
 
         <div className="admin-footer">
-          <p>Authorized personnel only. <a href="/" className="admin-link">Return to Store</a></p>
+          <p>
+            Authorized personnel only.{' '}
+            <a href="/admin-register" className="admin-link">
+              Register as Admin
+            </a>
+          </p>
         </div>
       </div>
     </div>

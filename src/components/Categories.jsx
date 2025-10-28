@@ -26,7 +26,7 @@ function Categories() {
   ];
 
   return (
-    <div className="categories" id="categories">
+    <div className="categories entrance-animation" id="categories">
       <h2>Shop by Category</h2>
       <div className="categories-grid">
         {categories.map((category, index) => (

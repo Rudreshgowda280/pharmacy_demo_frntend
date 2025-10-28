@@ -1,0 +1,82 @@
+.category-bar {
+  background-color: #0b4a46; /* dark green */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
+  padding: 10px 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  flex-wrap: nowrap;
+  position: relative;
+  width: 100%;
+}
+
+.category-item {
+  cursor: pointer;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+.category-item:hover {
+  color: #ffd700; /* gold hover */
+}
+
+.category-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 250px;
+  max-width: 300px;
+  padding: 10px 0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 15px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.medicine-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.medicine-price {
+  color: #007bff;
+  font-weight: 700;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -45,18 +45,29 @@ function Register() {
         }),
       });
 
-      const data = await response.json();
-
       console.log("Response status:", response.status);
-      console.log("Response data:", data);
 
-      if (response.ok && data.id) {
-        // ✅ Automatically log in after registration
-        login(data);
-        alert("Registration successful!");
-        navigate("/");
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Response data:", data);
+
+        if (data.id) {
+          // ✅ Automatically log in after registration
+          login(data);
+          alert("Registration successful!");
+          navigate("/");
+        } else {
+          alert(`Error: ${data.message || "Registration failed!"}`);
+        }
       } else {
-        alert(`Error: ${data.message || "Registration failed!"}`);
+        // Handle non-OK responses without assuming JSON
+        try {
+          const data = await response.json();
+          alert(`Error: ${data.message || "Registration failed!"}`);
+        } catch (jsonError) {
+          console.error("Failed to parse error response as JSON:", jsonError);
+          alert(`Error: Server responded with status ${response.status}. Please try again.`);
+        }
       }
     } catch (error) {
       console.error("Registration error:", error);

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders dashboard button', () => {
+test('renders home page with CategoryBar', () => {
   render(<App />);
-  const linkElement = screen.getByText(/Dashboard/i);
-  expect(linkElement).toBeInTheDocument();
+  const categoryElement = screen.getByText(/Apollo Products/i);
+  expect(categoryElement).toBeInTheDocument();
 });

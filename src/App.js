@@ -7,7 +7,10 @@ import "./styles/App.css";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import FeaturedProducts from "./components/FeaturedProducts";
+import HealthConditions from "./components/HealthConditions";
+
 import Categories from "./components/Categories";
+import CategoryBar from "./components/CategoryBar";
 import MedicineOffers from "./components/MedicineOffers";
 import Footer from "./components/Footer";
 import Prescription from "./components/Prescription";
@@ -27,6 +30,7 @@ import Checkout from "./components/Checkout";
 import OrderHistory from "./components/OrderHistory";
 import Admin from "./components/Admin";
 import AdminLogin from "./components/AdminLogin";
+import AdminRegister from "./components/AdminRegister";
 
 
 
@@ -36,10 +40,22 @@ const router = createBrowserRouter([
     element: (
       <div className="App">
         <Header />
+        <CategoryBar />
         <Hero />
-        <FeaturedProducts />
-        <Categories />
-        <MedicineOffers />
+        <div className="stagger-section">
+          <HealthConditions />
+        </div>
+
+        <div className="stagger-section">
+          <FeaturedProducts />
+        </div>
+
+        <div className="stagger-section">
+          <Categories />
+        </div>
+        <div className="stagger-section">
+          <MedicineOffers />
+        </div>
         <Footer />
       </div>
     ),
@@ -181,6 +197,10 @@ const router = createBrowserRouter([
     element: <AdminLogin />,
   },
   {
+    path: "/admin-register",
+    element: <AdminRegister />,
+  },
+  {
     path: "/admin",
     element: <Admin />,
     children: [
@@ -200,10 +220,7 @@ const router = createBrowserRouter([
         path: "orders",
         element: <Admin />,
       },
-      {
-        path: "approvals",
-        element: <Admin />,
-      },
+
       {
         path: "reports",
         element: <Admin />,

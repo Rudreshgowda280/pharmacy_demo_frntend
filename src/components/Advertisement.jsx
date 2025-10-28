@@ -1,13 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/Advertisement.css";
 
 function Advertisement() {
-  const [flipped, setFlipped] = useState({});
-
-  const toggleFlip = (id) => {
-    setFlipped(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
   const ads = [
     {
       id: 1,
@@ -27,28 +21,28 @@ function Advertisement() {
       id: 3,
       title: "Health Checkup Packages",
       description: "Comprehensive health screenings at affordable prices. Our packages include blood tests, ECG, X-rays, and doctor consultations. Early detection is key to prevention - book your checkup today and stay healthy.",
-      image: "https://via.placeholder.com/300x150/dc3545/ffffff?text=Health+Checkup",
+      image: "https://via.placeholder.com/300x150/dc3545/ffffff?text=helthcheck.jpg",
+      link: "#"
+    },
+    {
+      id: 4,
+      title: "Personal Care Products",
+      description: "Discover our wide range of personal care products including skincare, haircare, and hygiene essentials. Enjoy exclusive discounts on top brands and maintain your beauty routine with quality products.",
+      image: "https://via.placeholder.com/300x150/17a2b8/ffffff?text=Personal+Care",
       link: "#"
     }
   ];
 
   return (
     <div className="advertisement">
-      <h2>Medical Advertisements</h2>
+      <h2>Featured Advertisements</h2>
       <div className="ads-grid">
         {ads.map(ad => (
-          <div className={`ad-card ${flipped[ad.id] ? 'flipped' : ''}`} key={ad.id}>
-            <div className="ad-card-inner">
-              <div className="ad-card-front">
-                <img src={ad.image} alt={ad.title} />
-                <h3>{ad.title}</h3>
-                <button className="learn-more-btn" onClick={() => toggleFlip(ad.id)}>Learn More</button>
-              </div>
-              <div className="ad-card-back">
-                <p>{ad.description}</p>
-                <button className="back-btn" onClick={() => toggleFlip(ad.id)}>Back</button>
-              </div>
-            </div>
+          <div className="ad-card" key={ad.id}>
+            <img src={ad.image} alt={ad.title} />
+            <h3>{ad.title}</h3>
+            <p>{ad.description}</p>
+            <button>View Offer</button>
           </div>
         ))}
       </div>

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../styles/Checkout.css";
 
 function Checkout() {
   const { cart, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [shippingInfo, setShippingInfo] = useState({
@@ -95,6 +97,13 @@ function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Check if user is logged in
+    if (!user) {
+      alert("Please log in to place an order.");
+      navigate("/login");
+      return;
+    }
+
     // Validate form
     if (
       !shippingInfo.name ||
@@ -111,6 +120,7 @@ function Checkout() {
     // Create order object
     const order = {
       id: Date.now(),
+      userId: user.id,
       items: cart,
       shippingInfo,
       shippingMethod,

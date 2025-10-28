@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { useProducts } from '../contexts/ProductsContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -28,6 +30,7 @@ function Admin() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [stockAction, setStockAction] = useState({ productId: null, quantity: 0, action: '' });
   const [orders, setOrders] = useState([]);
+
   const activeTab = location.pathname.split('/').pop() || 'dashboard';
   const usdToInr = 83;
 
@@ -81,6 +84,8 @@ function Admin() {
 
   const { dailyRevenue, weeklyRevenue, monthlyRevenue, yearlyRevenue } = getRevenue();
 
+
+
   if (!user) {
     return <AdminLogin />;
   }
@@ -98,9 +103,7 @@ function Admin() {
         <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => navigate('/admin/orders')}>
           Orders
         </button>
-        <button className={activeTab === 'approvals' ? 'active' : ''} onClick={() => navigate('/admin/approvals')}>
-          Approvals
-        </button>
+
         <button className={activeTab === 'reports' ? 'active' : ''} onClick={() => navigate('/admin/reports')}>
           Reports
         </button>
@@ -127,12 +130,14 @@ function Admin() {
 
         <div className="add-product-section">
           <h3>Add New Product</h3>
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-            <option value="">Select Category</option>
-            {categories.map(cat => (
-              <option key={cat.name} value={cat.name}>{cat.name}</option>
-            ))}
-          </select>
+          <div className="category-selection">
+            <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+              <option value="">Select Category</option>
+              {categories.map(cat => (
+                <option key={cat.name} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
           <input
             type="text"
             placeholder="Product Name"
@@ -437,38 +442,7 @@ function Admin() {
         </div>
       )}
 
-      {activeTab === 'approvals' && (
-        <div className="approvals-management">
-          <h2>Product Approvals</h2>
-          {pendingProducts.length === 0 ? (
-            <p>No pending products for approval.</p>
-          ) : (
-            <div className="pending-products-list">
-              {pendingProducts.map((product) => (
-                <div key={product.id} className="pending-product-card">
-                  <div className="product-header">
-                    <h3>{product.name}</h3>
-                    <p>Submitted: {new Date(product.submittedAt).toLocaleDateString()}</p>
-                  </div>
-                  <div className="product-details">
-                    <p><strong>Category:</strong> {product.category}</p>
-                    <p><strong>Price:</strong> {product.price}</p>
-                    <p><strong>Description:</strong> {product.description}</p>
-                    <p><strong>Brand:</strong> {product.brand}</p>
-                    <p><strong>Strength:</strong> {product.strength}</p>
-                    <p><strong>Pack Size:</strong> {product.packSize}</p>
-                    <p><strong>Stock:</strong> {product.stock}</p>
-                  </div>
-                  <div className="approval-actions">
-                    <button onClick={() => approveProduct(product.id)}>Approve</button>
-                    <button onClick={() => rejectProduct(product.id)}>Reject</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+
 
       {activeTab === 'reports' && (
         <div className="reports-section">

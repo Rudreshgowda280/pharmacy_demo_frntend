@@ -22,13 +22,32 @@ y.about-us {
   margin-bottom: 20px;
 }
 
-.header-image {
+.image-container {
+  position: relative;
+  display: inline-block;
   width: 100%;
   max-width: 600px;
+  margin-top: 20px;
+}
+
+.header-image {
+  width: 100%;
   height: auto;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+}
+
+.overlay-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  z-index: 1;
 }
 
 .about-content {

@@ -12,15 +12,15 @@ function Hero() {
         </p>
         <div className="features">
           <div className="feature">
-            <span className="feature-icon">🚚</span>
+            <span className="feature-icon"></span>
             <span>Fast Delivery</span>
           </div>
           <div className="feature">
-            <span className="feature-icon">🛡️</span>
+            <span className="feature-icon"></span>
             <span>Secure & Safe</span>
           </div>
           <div className="feature">
-            <span className="feature-icon">📞</span>
+            <span className="feature-icon"></span>
             <span>24/7 Support</span>
           </div>
         </div>
