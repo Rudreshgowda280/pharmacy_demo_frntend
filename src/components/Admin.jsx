@@ -1,537 +1,517 @@
-
-
-import React, { useState, useEffect } from 'react';
-import { useProducts } from '../contexts/ProductsContext';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { Bar, Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
-import AdminLogin from './AdminLogin';
-
-import '../styles/Admin.css';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
+import React, { useState, useEffect } from "react";
+import "../styles/Admin.css";
 
 function Admin() {
-  const { categories, addProduct, updateProduct, removeProduct, importStock, exportStock, getRevenue, getTopSellingProducts, getRevenueByCategory, getOrderTrends, pendingProducts, approveProduct, rejectProduct } = useProducts();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
-    name: '',
-    price: '',
-    description: '',
-    brand: '',
-    strength: '',
-    packSize: '',
-    stock: 0
+    name: "",
+    category: "",
+    price: "",
+    description: "",
+    brand: "",
+    strength: "",
+    packSize: "",
+    stock: 0,
   });
   const [editingProduct, setEditingProduct] = useState(null);
-  const [stockAction, setStockAction] = useState({ productId: null, quantity: 0, action: '' });
-  const [orders, setOrders] = useState([]);
 
-  const activeTab = location.pathname.split('/').pop() || 'dashboard';
-  const usdToInr = 83;
-
+  // 🔹 Fetch all products from backend
   useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-    setOrders(storedOrders);
+    fetch("http://localhost:8080/api/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((err) => console.error("Error loading products:", err));
   }, []);
 
-  const handleAddProduct = () => {
-    if (!selectedCategory || !newProduct.name) {
-      alert("Please select a category and enter a product name.");
-      return;
-    }
-    let productToAdd = { ...newProduct };
-    if (productToAdd.price && !productToAdd.price.startsWith('₹')) {
-      productToAdd.price = '₹' + productToAdd.price;
-    }
-    addProduct(selectedCategory, productToAdd);
-    alert("Product added successfully!");
-    setNewProduct({
-      name: '',
-      price: '',
-      description: '',
-      brand: '',
-      strength: '',
-      packSize: '',
-      stock: 0
-    });
-  };
+  // 🔹 Add new product
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
 
-  const handleUpdateProduct = () => {
-    if (editingProduct) {
-      updateProduct(editingProduct.category, editingProduct.id, editingProduct);
-      setEditingProduct(null);
-    }
-  };
+    try {
+      const response = await fetch("http://localhost:8080/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProduct),
+      });
 
-  const handleStockAction = () => {
-    if (stockAction.productId && stockAction.quantity > 0) {
-      const category = categories.find(cat => cat.medicines.some(med => med.id === stockAction.productId));
-      if (category) {
-        if (stockAction.action === 'import') {
-          importStock(category.name, stockAction.productId, stockAction.quantity);
-        } else if (stockAction.action === 'export') {
-          exportStock(category.name, stockAction.productId, stockAction.quantity);
-        }
+      if (response.ok) {
+        const savedProduct = await response.json();
+        setProducts([...products, savedProduct]);
+        alert("✅ Product added successfully!");
+        setNewProduct({
+          name: "",
+          category: "",
+          price: "",
+          description: "",
+          brand: "",
+          strength: "",
+          packSize: "",
+          stock: 0,
+        });
+      } else {
+        alert("❌ Failed to add product.");
       }
-      setStockAction({ productId: null, quantity: 0, action: '' });
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ Error connecting to backend.");
     }
   };
 
-  const { dailyRevenue, weeklyRevenue, monthlyRevenue, yearlyRevenue } = getRevenue();
+  // 🔹 Update product
+  const handleUpdateProduct = async () => {
+    if (!editingProduct) return;
 
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/products/${editingProduct.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editingProduct),
+        }
+      );
 
+      if (response.ok) {
+        const updated = await response.json();
+        setProducts(
+          products.map((p) => (p.id === updated.id ? updated : p))
+        );
+        alert("✅ Product updated successfully!");
+        setEditingProduct(null);
+      } else {
+        alert("❌ Error updating product!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ Failed to connect to backend.");
+    }
+  };
 
-  if (!user) {
-    return <AdminLogin />;
-  }
+  // 🔹 Delete product
+  const handleDeleteProduct = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+        method: "DELETE",
+      });
 
-  return (
-    <div className="admin-container">
-      <h1>Welcome to Admin Dashboard</h1>
-      <div className="tab-navigation">
-        <button className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => navigate('/admin/dashboard')}>
-          Dashboard
-        </button>
-        <button className={activeTab === 'products' ? 'active' : ''} onClick={() => navigate('/admin/products')}>
-          Products
-        </button>
-        <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => navigate('/admin/orders')}>
-          Orders
-        </button>
+      if (response.ok) {
+        setProducts(products.filter((p) => p.id !== id));
+        alert("🗑️ Product deleted successfully!");
+      } else {
+        alert("❌ Error deleting product.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ Failed to connect to backend.");
+    }
+  };
 
-        <button className={activeTab === 'reports' ? 'active' : ''} onClick={() => navigate('/admin/reports')}>
-          Reports
-        </button>
+  // ✅ Group products by category (to avoid meds.map error)
+  const groupedProducts = Array.isArray(products)
+    ? products.reduce((acc, product) => {
+        if (!acc[product.category]) acc[product.category] = [];
+        acc[product.category].push(product);
+        return acc;
+      }, {})
+    : {};
+
+  const renderDashboard = () => (
+    <div className="dashboard">
+      <div className="dashboard-cards">
+        <div className="dashboard-card">
+          <h3>Total Revenue</h3>
+          <span className="card-value">$12,345</span>
+          <div className="card-icon">💰</div>
+        </div>
+        <div className="dashboard-card">
+          <h3>Total Orders</h3>
+          <span className="card-value">1,234</span>
+          <div className="card-icon">📦</div>
+        </div>
+        <div className="dashboard-card">
+          <h3>Total Products</h3>
+          <span className="card-value">{products.length}</span>
+          <div className="card-icon">🛒</div>
+        </div>
+        <div className="dashboard-card">
+          <h3>Active Users</h3>
+          <span className="card-value">567</span>
+          <div className="card-icon">👥</div>
+        </div>
       </div>
 
-      {activeTab === 'products' && (
-        <>
-          <div className="revenue-section">
-            <h2>Revenue Overview</h2>
-            <div className="revenue-stats">
-              <div className="stat">
-                <h3>Daily Revenue</h3>
-                <p>₹{(dailyRevenue * usdToInr).toFixed(2)}</p>
-              </div>
-              <div className="stat">
-                <h3>Monthly Revenue</h3>
-                <p>₹{(monthlyRevenue * usdToInr).toFixed(2)}</p>
-              </div>
-            </div>
-          </div>
+      <div className="charts-section">
+        <div className="chart-container">
+          <h3>Sales Overview</h3>
+          <p>Chart placeholder - Integrate Chart.js for actual charts</p>
+        </div>
+        <div className="chart-container">
+          <h3>Product Categories</h3>
+          <p>Chart placeholder - Integrate Chart.js for actual charts</p>
+        </div>
+      </div>
 
-          <div className="product-management">
-            <h2>Product Management</h2>
-
-        <div className="add-product-section">
-          <h3>Add New Product</h3>
-          <div className="category-selection">
-            <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-              <option value="">Select Category</option>
-              {categories.map(cat => (
-                <option key={cat.name} value={cat.name}>{cat.name}</option>
-              ))}
-            </select>
+      <div className="recent-orders">
+        <h3>Recent Orders</h3>
+        <div className="recent-order-item">
+          <div className="order-info">
+            <div className="order-id">Order #12345</div>
+            <div className="order-date">2023-10-01</div>
           </div>
+          <div className="order-amount">$99.99</div>
+        </div>
+        <div className="recent-order-item">
+          <div className="order-info">
+            <div className="order-id">Order #12346</div>
+            <div className="order-date">2023-10-02</div>
+          </div>
+          <div className="order-amount">$149.99</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProducts = () => (
+    <div className="product-management">
+      <div className="add-product-section">
+        <h3>Add New Product</h3>
+        <form onSubmit={handleAddProduct}>
           <input
             type="text"
-            placeholder="Product Name"
+            placeholder="Name"
             value={newProduct.name}
-            onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+            required
           />
           <input
             type="text"
-            placeholder="Price (e.g., ₹496.17)"
+            placeholder="Category"
+            value={newProduct.category}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, category: e.target.value })
+            }
+            required
+          />
+          <input
+            type="text"
+            placeholder="Price"
             value={newProduct.price}
-            onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={newProduct.description}
-            onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+            required
           />
           <input
             type="text"
             placeholder="Brand"
             value={newProduct.brand}
-            onChange={(e) => setNewProduct({...newProduct, brand: e.target.value})}
+            onChange={(e) => setNewProduct({ ...newProduct, brand: e.target.value })}
           />
           <input
             type="text"
             placeholder="Strength"
             value={newProduct.strength}
-            onChange={(e) => setNewProduct({...newProduct, strength: e.target.value})}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, strength: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="Pack Size"
             value={newProduct.packSize}
-            onChange={(e) => setNewProduct({...newProduct, packSize: e.target.value})}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, packSize: e.target.value })
+            }
           />
           <input
             type="number"
             placeholder="Stock"
             value={newProduct.stock}
-            onChange={(e) => setNewProduct({...newProduct, stock: parseInt(e.target.value) || 0})}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, stock: Number(e.target.value) })
+            }
           />
-          <button onClick={handleAddProduct}>Add Product</button>
-        </div>
+          <textarea
+            placeholder="Description"
+            value={newProduct.description}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, description: e.target.value })
+            }
+          ></textarea>
+          <button type="submit">Add Product</button>
+        </form>
+      </div>
 
-        <div className="stock-management">
-          <h3>Stock Management</h3>
-          <select value={stockAction.productId || ''} onChange={(e) => setStockAction({...stockAction, productId: parseInt(e.target.value)})}>
-            <option value="">Select Product</option>
-            {categories.flatMap(cat => cat.medicines.map(med => (
-              <option key={med.id} value={med.id}>{med.name} (Current Stock: {med.stock})</option>
-            )))}
-          </select>
-          <select value={stockAction.action} onChange={(e) => setStockAction({...stockAction, action: e.target.value})}>
-            <option value="">Select Action</option>
-            <option value="import">Import Stock</option>
-            <option value="export">Export Stock</option>
-          </select>
-          <input
-            type="number"
-            placeholder="Quantity"
-            value={stockAction.quantity}
-            onChange={(e) => setStockAction({...stockAction, quantity: parseInt(e.target.value) || 0})}
-          />
-          <button onClick={handleStockAction}>Execute</button>
-        </div>
-
-        <div className="product-list">
-          <h3>All Products</h3>
-          {categories.map(cat => (
-            <div key={cat.name} className="category-section">
-              <h4>{cat.name}</h4>
+      <div className="product-list">
+        <h3>All Products</h3>
+        {Object.keys(groupedProducts).length === 0 ? (
+          <p>No products available.</p>
+        ) : (
+          Object.entries(groupedProducts).map(([category, meds]) => (
+            <div key={category} className="category-section">
+              <h4>{category}</h4>
               <div className="products-grid">
-                {cat.medicines.map(med => (
+                {meds.map((med) => (
                   <div key={med.id} className="product-card">
                     <h5>{med.name}</h5>
-                    <p>Price: {med.price}</p>
-                    <p>Stock: {med.stock}</p>
-                    <p>Brand: {med.brand}</p>
-                    <button onClick={() => setEditingProduct({...med, category: cat.name})}>Edit</button>
-                    <button onClick={() => removeProduct(cat.name, med.id)}>Remove</button>
+                    <p><strong>Price:</strong> 💲 {med.price}</p>
+                    <p><strong>Stock:</strong> {med.stock}</p>
+                    <p>{med.description}</p>
+                    <button onClick={() => setEditingProduct(med)}>Edit</button>
+                    <button onClick={() => handleDeleteProduct(med.id)}>
+                      Delete
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
 
-        {editingProduct && (
-          <div className="edit-product-modal">
+  const renderOrders = () => (
+    <div className="order-management">
+      <h2>Order Management</h2>
+      <div className="orders-list">
+        <div className="order-card">
+          <div className="order-header">
+            <h3>Order #12345</h3>
+            <span className="order-status">Pending</span>
+          </div>
+          <p className="order-date">Date: 2023-10-01</p>
+          <p className="order-total">Total: $99.99</p>
+          <div className="order-details">
+            <h4>Items:</h4>
+            <div className="order-items">
+              <div className="order-item">
+                <div className="item-info">
+                  <h5>Product Name</h5>
+                  <p>Qty: 2</p>
+                </div>
+                <div className="item-price">$49.99</div>
+              </div>
+            </div>
+            <div className="shipping-info">
+              <h4>Shipping Address:</h4>
+              <p>123 Main St, City, State 12345</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderApprovals = () => (
+    <div className="approvals-management">
+      <h2>Approvals Management</h2>
+      <div className="pending-products-list">
+        <div className="pending-product-card">
+          <div className="product-header">
+            <h3>Pending Product Approval</h3>
+            <p>Submitted by: Vendor Name</p>
+          </div>
+          <div className="product-details">
+            <p><strong>Name:</strong> Sample Product</p>
+            <p><strong>Category:</strong> Medicines</p>
+            <p><strong>Price:</strong> $19.99</p>
+          </div>
+          <div className="approval-actions">
+            <button>Approve</button>
+            <button>Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderReports = () => (
+    <div className="reports-section">
+      <h2>Reports & Analytics</h2>
+      <div className="report-cards">
+        <div className="report-card">
+          <h3>Revenue Breakdown</h3>
+          <div className="revenue-breakdown">
+            <div className="revenue-item">
+              <span>Medicines</span>
+              <span>$8,000</span>
+            </div>
+            <div className="revenue-item">
+              <span>Health Supplements</span>
+              <span>$3,000</span>
+            </div>
+            <div className="revenue-item">
+              <span>Personal Care</span>
+              <span>$1,345</span>
+            </div>
+          </div>
+        </div>
+        <div className="report-card">
+          <h3>Category Revenue</h3>
+          <div className="category-revenue">
+            <div className="category-item">
+              <span>Medicines</span>
+              <span>$8,000</span>
+            </div>
+            <div className="category-item">
+              <span>Health Supplements</span>
+              <span>$3,000</span>
+            </div>
+            <div className="category-item">
+              <span>Personal Care</span>
+              <span>$1,345</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="top-selling-products">
+        <h3>Top Selling Products</h3>
+        <div className="top-products-list">
+          <div className="top-product-item">
+            <div className="rank">1</div>
+            <div className="product-info">
+              <h4>Product A</h4>
+              <p>Category: Medicines</p>
+            </div>
+            <div className="product-stats">
+              <p>Sales: 500</p>
+              <p>Revenue: $5,000</p>
+            </div>
+          </div>
+          <div className="top-product-item">
+            <div className="rank">2</div>
+            <div className="product-info">
+              <h4>Product B</h4>
+              <p>Category: Health Supplements</p>
+            </div>
+            <div className="product-stats">
+              <p>Sales: 300</p>
+              <p>Revenue: $3,000</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="order-trends">
+        <h3>Order Trends</h3>
+        <div className="trends-chart">
+          <p>Trends chart placeholder</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="admin-container">
+      <h1>Admin Dashboard</h1>
+
+      <div className="tab-navigation">
+        <button
+          className={activeTab === "dashboard" ? "active" : ""}
+          onClick={() => setActiveTab("dashboard")}
+        >
+          Dashboard
+        </button>
+        <button
+          className={activeTab === "products" ? "active" : ""}
+          onClick={() => setActiveTab("products")}
+        >
+          Products
+        </button>
+        <button
+          className={activeTab === "orders" ? "active" : ""}
+          onClick={() => setActiveTab("orders")}
+        >
+          Orders
+        </button>
+        <button
+          className={activeTab === "approvals" ? "active" : ""}
+          onClick={() => setActiveTab("approvals")}
+        >
+          Approvals
+        </button>
+        <button
+          className={activeTab === "reports" ? "active" : ""}
+          onClick={() => setActiveTab("reports")}
+        >
+          Reports
+        </button>
+      </div>
+
+      {activeTab === "dashboard" && renderDashboard()}
+      {activeTab === "products" && renderProducts()}
+      {activeTab === "orders" && renderOrders()}
+      {activeTab === "approvals" && renderApprovals()}
+      {activeTab === "reports" && renderReports()}
+
+      {/* ✏️ Edit Product Modal */}
+      {editingProduct && (
+        <div className="edit-product-modal">
+          <div>
             <h3>Edit Product</h3>
             <input
               type="text"
-              placeholder="Name"
               value={editingProduct.name}
-              onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+              onChange={(e) =>
+                setEditingProduct({ ...editingProduct, name: e.target.value })
+              }
             />
             <input
               type="text"
-              placeholder="Price"
+              value={editingProduct.category}
+              onChange={(e) =>
+                setEditingProduct({ ...editingProduct, category: e.target.value })
+              }
+            />
+            <input
+              type="text"
               value={editingProduct.price}
-              onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})}
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              value={editingProduct.description}
-              onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
-            />
-            <input
-              type="text"
-              placeholder="Brand"
-              value={editingProduct.brand}
-              onChange={(e) => setEditingProduct({...editingProduct, brand: e.target.value})}
-            />
-            <input
-              type="text"
-              placeholder="Strength"
-              value={editingProduct.strength}
-              onChange={(e) => setEditingProduct({...editingProduct, strength: e.target.value})}
-            />
-            <input
-              type="text"
-              placeholder="Pack Size"
-              value={editingProduct.packSize}
-              onChange={(e) => setEditingProduct({...editingProduct, packSize: e.target.value})}
+              onChange={(e) =>
+                setEditingProduct({ ...editingProduct, price: e.target.value })
+              }
             />
             <input
               type="number"
-              placeholder="Stock"
               value={editingProduct.stock}
-              onChange={(e) => setEditingProduct({...editingProduct, stock: parseInt(e.target.value) || 0})}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  stock: Number(e.target.value),
+                })
+              }
             />
-            <button onClick={handleUpdateProduct}>Update</button>
+            <textarea
+              value={editingProduct.description}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  description: e.target.value,
+                })
+              }
+            ></textarea>
+            <button onClick={handleUpdateProduct}>Save</button>
             <button onClick={() => setEditingProduct(null)}>Cancel</button>
           </div>
-        )}
-          </div>
-        </>
-      )}
-
-      {activeTab === 'dashboard' && (
-        <div className="dashboard">
-          <div className="dashboard-cards">
-            <div className="dashboard-card">
-              <h3>Total Orders</h3>
-              <p className="card-value">{orders.length}</p>
-              <span className="card-icon">📦</span>
-            </div>
-            <div className="dashboard-card">
-              <h3>Total Revenue</h3>
-              <p className="card-value">₹{(orders.reduce((sum, order) => sum + (order.total || 0), 0) * usdToInr).toFixed(2)}</p>
-              <span className="card-icon">💰</span>
-            </div>
-            <div className="dashboard-card">
-              <h3>Total Products</h3>
-              <p className="card-value">{categories.reduce((sum, cat) => sum + cat.medicines.length, 0)}</p>
-              <span className="card-icon">💊</span>
-            </div>
-            <div className="dashboard-card">
-              <h3>Low Stock Items</h3>
-              <p className="card-value">{categories.flatMap(cat => cat.medicines).filter(med => med.stock < 10).length}</p>
-              <span className="card-icon">⚠️</span>
-            </div>
-          </div>
-
-          <div className="charts-section">
-            <div className="chart-container">
-              <h3>Revenue Overview</h3>
-              <Bar
-                data={{
-                  labels: ['Daily', 'Monthly'],
-                  datasets: [{
-                    label: 'Revenue ($)',
-                    data: [dailyRevenue, monthlyRevenue],
-                    backgroundColor: ['#4CAF50', '#2196F3'],
-                    borderColor: ['#45a049', '#1976D2'],
-                    borderWidth: 1
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: { position: 'top' },
-                    title: { display: true, text: 'Revenue Statistics' }
-                  }
-                }}
-              />
-            </div>
-
-            <div className="chart-container">
-              <h3>Order Trends</h3>
-              <Line
-                data={{
-                  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                  datasets: [{
-                    label: 'Orders',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderColor: '#FF6384',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.1
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: { position: 'top' },
-                    title: { display: true, text: 'Monthly Orders' }
-                  }
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="motivational-section">
-            <h2>Motivational Quotes</h2>
-            <div className="motivational-quotes">
-              <div className="quote-card">
-                <blockquote>"The only way to do great work is to love what you do."</blockquote>
-                <cite>Steve Jobs</cite>
-              </div>
-              <div className="quote-card">
-                <blockquote>"Believe you can and you're halfway there."</blockquote>
-                <cite>Theodore Roosevelt</cite>
-              </div>
-              <div className="quote-card">
-                <blockquote>"The future belongs to those who believe in the beauty of their dreams."</blockquote>
-                <cite>Eleanor Roosevelt</cite>
-              </div>
-              <div className="quote-card">
-                <blockquote>"You miss 100% of the shots you don't take."</blockquote>
-                <cite>Wayne Gretzky</cite>
-              </div>
-            </div>
-          </div>
-
-          <div className="recent-orders">
-            <h3>Recent Orders</h3>
-            {orders.slice(-5).reverse().map((order) => (
-              <div key={order.id} className="recent-order-item">
-                <div className="order-info">
-                  <span className="order-id">Order #{order.id}</span>
-                  <span className="order-date">{new Date(order.date).toLocaleDateString()}</span>
-                </div>
-                <span className="order-amount">₹{(order.total * usdToInr).toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
-
-
-      {activeTab === 'orders' && (
-        <div className="order-management">
-          <h2>Order Management</h2>
-          {orders.length === 0 ? (
-            <p>No orders found.</p>
-          ) : (
-            <div className="orders-list">
-              {orders.map((order) => (
-                <div key={order.id} className="order-card">
-                  <div className="order-header">
-                    <h3>Order #{order.id}</h3>
-                    <p className="order-date">Date: {new Date(order.date).toLocaleDateString()}</p>
-                    <p className="order-total">Total: ₹{(order.total * usdToInr).toFixed(2)}</p>
-                  </div>
-                  <div className="order-details">
-                    <h4>Items Ordered:</h4>
-                    <div className="order-items">
-                      {(order.items || []).filter(item => item && item.name).map((item, index) => (
-                        <div key={index} className="order-item">
-                          <div className="item-info">
-                            <h5>{item.name}</h5>
-                            <p>{item.brand} • {item.strength} • {item.packSize}</p>
-                            <p>Quantity: {item.quantity}</p>
-                          </div>
-                          <div className="item-price">
-                            ₹{(parseFloat(item.price.replace('$', '')) * item.quantity * usdToInr).toFixed(2)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {order.shippingInfo && (
-                      <div className="shipping-info">
-                        <h4>Shipping Information:</h4>
-                        <p>{order.shippingInfo.name}</p>
-                        <p>{order.shippingInfo.street}</p>
-                        <p>{order.shippingInfo.city}, {order.shippingInfo.state} {order.shippingInfo.zip}</p>
-                        <p>Phone: {order.shippingInfo.phone}</p>
-                        <p>Shipping Method: {order.shippingMethod === 'standard' ? 'Standard (Free)' : 'Express ($9.99)'}</p>
-                      </div>
-                    )}
-
-
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-
-
-      {activeTab === 'reports' && (
-        <div className="reports-section">
-          <h2>Reports & Analytics</h2>
-
-          <div className="report-cards">
-            <div className="report-card">
-              <h3>Revenue Breakdown</h3>
-              <div className="revenue-breakdown">
-                <div className="revenue-item">
-                  <span>Daily:</span>
-                  <span>₹{(dailyRevenue * usdToInr).toFixed(2)}</span>
-                </div>
-                <div className="revenue-item">
-                  <span>Weekly:</span>
-                  <span>₹{(weeklyRevenue * usdToInr).toFixed(2)}</span>
-                </div>
-                <div className="revenue-item">
-                  <span>Monthly:</span>
-                  <span>₹{(monthlyRevenue * usdToInr).toFixed(2)}</span>
-                </div>
-                <div className="revenue-item">
-                  <span>Yearly:</span>
-                  <span>₹{(yearlyRevenue * usdToInr).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="report-card">
-              <h3>Revenue by Category</h3>
-              <div className="category-revenue">
-                {Object.entries(getRevenueByCategory()).map(([category, revenue]) => (
-                  <div key={category} className="category-item">
-                    <span>{category}:</span>
-                    <span>₹{(revenue * usdToInr).toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+      <div className="motivational-section">
+        <h2>Motivational Quotes</h2>
+        <div className="motivational-quotes">
+          <div className="quote-card">
+            <blockquote>"Success is not final, failure is not fatal: It is the courage to continue that counts."</blockquote>
+            <cite>- Winston Churchill</cite>
           </div>
-
-          <div className="top-selling-products">
-            <h3>Top Selling Products</h3>
-            <div className="top-products-list">
-              {getTopSellingProducts().map((product, index) => (
-                <div key={index} className="top-product-item">
-                  <span className="rank">#{index + 1}</span>
-                  <div className="product-info">
-                    <h4>{product.name}</h4>
-                    <p>{product.brand}</p>
-                  </div>
-                  <div className="product-stats">
-                    <p>Quantity: {product.quantity}</p>
-                    <p>Revenue: ₹{(product.revenue * usdToInr).toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="quote-card">
+            <blockquote>"The only way to do great work is to love what you do."</blockquote>
+            <cite>- Steve Jobs</cite>
           </div>
-
-          <div className="order-trends">
-            <h3>Order Trends</h3>
-            <div className="trends-chart">
-              <Bar
-                data={{
-                  labels: Object.keys(getOrderTrends()),
-                  datasets: [{
-                    label: 'Orders',
-                    data: Object.values(getOrderTrends()),
-                    backgroundColor: '#4CAF50',
-                    borderColor: '#45a049',
-                    borderWidth: 1
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: { position: 'top' },
-                    title: { display: true, text: 'Monthly Order Trends' }
-                  }
-                }}
-              />
-            </div>
+          <div className="quote-card">
+            <blockquote>"Believe you can and you're halfway there."</blockquote>
+            <cite>- Theodore Roosevelt</cite>
           </div>
         </div>
-      )}
-
+      </div>
     </div>
-
   );
 }
 

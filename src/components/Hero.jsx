@@ -25,11 +25,8 @@ function Hero() {
           </div>
         </div>
         <div className="buttons-container">
-          <Link to="/medicines" className="cta-link">
-            <button className="cta-button">Shop Now</button>
-          </Link>
           <div className="patient-form-box">
-            <Link to="/patient-form" className="patient-form-button">Patient Form</Link>
+            <Link to="/medicines" className="patient-form-button">Explore Medicine</Link>
           </div>
         </div>
       </div>

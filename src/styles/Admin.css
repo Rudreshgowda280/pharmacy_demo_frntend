@@ -1,3 +1,16 @@
+.admin-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.access-denied {
+  text-align: center;
+  font-size: 24px;
+  color: #dc3545;
+  margin-top: 50px;
+}
+
 .admin-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -36,9 +49,13 @@
 
 .tab-navigation {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
   margin-bottom: 30px;
   animation: fadeIn 1.2s ease-out 0.3s both;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .tab-navigation button {
@@ -49,13 +66,15 @@
   font-size: 16px;
   color: #ffffff;
   text-decoration: none;
-  margin-right: 10px;
+  margin-bottom: 10px;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   border-radius: 25px;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 200px;
 }
 
 .tab-navigation button::before {
@@ -280,10 +299,13 @@
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 8px;
+  margin-bottom: 5px;
+  margin-right: 0;
   font-size: 12px;
   font-weight: 500;
   transition: background-color 0.3s ease;
+  display: block;
+  width: 100%;
 }
 
 .product-card button:hover {
@@ -485,10 +507,12 @@
 }
 
 .dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  flex-direction: row;
   gap: 20px;
   margin-bottom: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .dashboard-card {
@@ -551,8 +575,8 @@
 }
 
 .charts-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 30px;
   margin-bottom: 40px;
   animation: slideInRight 1s ease-out 0.8s both;
@@ -714,11 +738,6 @@
 
   .products-grid {
     grid-template-columns: 1fr;
-  }
-
-  .tab-navigation {
-    flex-direction: column;
-    align-items: center;
   }
 
   .tab-navigation button {

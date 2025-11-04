@@ -6,7 +6,7 @@ import { ProductsProvider } from "./contexts/ProductsContext";
 import "./styles/App.css";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import FeaturedProducts from "./components/FeaturedProducts";
+
 import HealthConditions from "./components/HealthConditions";
 
 import Categories from "./components/Categories";
@@ -17,7 +17,6 @@ import Prescription from "./components/Prescription";
 import AboutUs from "./components/AboutUs";
 import FAQs from "./components/FAQs";
 import PrivacyPolicy from "./components/PrivacyPolicy";
-import PatientForm from "./components/PatientForm";
 import PatientConsent from "./components/PatientConsent";
 import PatientBasicInfo from "./components/PatientBasicInfo";
 import Medicines from "./components/Medicines";
@@ -46,9 +45,7 @@ const router = createBrowserRouter([
           <HealthConditions />
         </div>
 
-        <div className="stagger-section">
-          <FeaturedProducts />
-        </div>
+
 
         <div className="stagger-section">
           <Categories />
@@ -130,16 +127,7 @@ const router = createBrowserRouter([
       </div>
     ),
   },
-  {
-    path: "/patient-form",
-    element: (
-      <div className="App">
-        <Header />
-        <PatientForm />
-        <Footer />
-      </div>
-    ),
-  },
+
   {
     path: "/login",
     element: <Login />,

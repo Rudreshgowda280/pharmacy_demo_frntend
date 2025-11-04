@@ -15,13 +15,13 @@ function CategoryBar() {
   };
 
   const categoryBarItems = [
-    "HYNO Products",
     "Baby Care",
     "Nutritional Drinks & Supplements",
     "Women Care",
     "Personal Care",
     "Health Condition",
     "Home Essentials",
+    "Health Care",
   ];
 
   // Mapping from CategoryBar items to ProductsContext categories
@@ -100,6 +100,18 @@ function CategoryBar() {
         "Massage & Essential Oils",
         "Hand Wash & Sanitizers",
         "Hair Care"
+      ];
+    }
+    if (categoryName === "Health Care") {
+      return [
+        "Mental Wellness",
+        "Liver Care",
+        "Diabetic",
+        "Pain Relief",
+        "Cardiac",
+        "Blood Pressure",
+        "Cholesterol",
+        "Kidney Care"
       ];
     }
     const mappedCategory = categoryMapping[categoryName];

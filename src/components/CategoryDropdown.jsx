@@ -10,7 +10,7 @@ function CategoryDropdown() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [sortOption, setSortOption] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
@@ -70,12 +70,9 @@ function CategoryDropdown() {
 
   const handleCategorySelect = (categoryName) => {
     setSelectedCategory(selectedCategory === categoryName ? null : categoryName);
-    setIsDropdownOpen(false); // Close dropdown after selection
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+
 
   const handleClear = () => {
     setSelectedCategory(null);
@@ -87,23 +84,21 @@ function CategoryDropdown() {
     <div className="category-dropdown">
       <div className="search-header">
         <div className="dropdown-container">
-          <button onClick={toggleDropdown} className="dropdown-toggle">
+          <div className="dropdown-toggle">
             Categories ▼
-          </button>
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              {categories.map((category, index) => (
-                <button
-                  key={index}
-                  className={`dropdown-item ${selectedCategory === category.name ? 'active' : ''}`}
-                  onClick={() => handleCategorySelect(category.name)}
-                >
-                  <img src={category.image} alt={category.name} />
-                  <span>{category.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          </div>
+          <div className="dropdown-menu">
+            {categories.map((category, index) => (
+              <button
+                key={index}
+                className={`dropdown-item ${selectedCategory === category.name ? 'active' : ''}`}
+                onClick={() => handleCategorySelect(category.name)}
+              >
+                <img src={category.image} alt={category.name} />
+                <span>{category.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
         <input
           type="text"
@@ -126,9 +121,8 @@ function CategoryDropdown() {
         )}
 
       </div>
-      {(selectedCategory || searchTerm || sortOption) && (
         <div className="medicines-list">
-        <h3>All Medicines</h3>
+        <h3>{selectedCategory || "All Medicines"}</h3>
         <div className="medicines-grid">
           {filteredAndSortedMedicines.length > 0 ? (
             filteredAndSortedMedicines.map((medicine, index) => (
@@ -164,7 +158,6 @@ function CategoryDropdown() {
           )}
         </div>
       </div>
-      )}
     </div>
   );
 }

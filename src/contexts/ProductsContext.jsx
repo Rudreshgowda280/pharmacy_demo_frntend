@@ -365,8 +365,20 @@ export const ProductsProvider = ({ children }) => {
     setPendingProducts(prev => prev.filter(p => p.id !== pendingId));
   };
 
+  const products = categories.reduce((acc, cat) => {
+    acc[cat.name] = cat.medicines;
+    return acc;
+  }, {});
+
+  const setProducts = (newProducts) => {
+    const newCategories = Object.entries(newProducts).map(([name, medicines]) => ({ name, medicines }));
+    setCategories(newCategories);
+  };
+
   const value = {
     categories,
+    products,
+    setProducts,
     pendingProducts,
     addCategory,
     addProduct,

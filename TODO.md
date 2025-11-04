@@ -1,2 +1,3 @@
-- [x] Update CategoryBar.jsx to use hover (onMouseEnter/onMouseLeave) instead of click for dropdown
-- [x] Test dropdown positioning and hover behavior
+# TODO List
+
+- [x] Replace the "Patient Form" button in Hero.jsx with "Explore Medicine" button that links to "/medicines"
